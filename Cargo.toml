@@ -9,5 +9,4 @@ strip = true
 
 [dependencies]
 colored = "3.0.0"
-libc = "0.2.169"
 winapi = { version = "0.3.9", features = ["wincon", "winnt"] }
