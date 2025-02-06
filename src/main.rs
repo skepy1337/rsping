@@ -2,30 +2,21 @@ use colored::Colorize;
 use std::net::{IpAddr, SocketAddr, TcpStream, ToSocketAddrs};
 use std::time::{Duration, Instant};
 
-fn is_port_open(ip: &str, port: u16, timeout: u64) -> bool {
-    let ip_addr: Result<IpAddr, _> = ip.parse();
-    if let Ok(ip_addr) = ip_addr {
-        let socket_addr = SocketAddr::new(ip_addr, port);
-        TcpStream::connect_timeout(&socket_addr, Duration::from_millis(timeout)).is_ok()
-    } else {
-        eprintln!("Could not parse ip: {}", ip);
-        std::process::exit(1);
-    }
+fn is_port_open(ip: IpAddr, port: u16, timeout: u64) -> bool {
+    let socket_addr = SocketAddr::new(ip, port);
+    TcpStream::connect_timeout(&socket_addr, Duration::from_millis(timeout)).is_ok()
 }
 
-fn dns_resolve(hostname: &str) -> String {
+fn dns_resolve(hostname: &str) -> IpAddr {
     let socket_addrs = (hostname, 0).to_socket_addrs();
 
-    if let Ok(mut addrs) = socket_addrs {
-        if let Some(addr) = addrs.next() {
-            return addr.ip().to_string();
+    match socket_addrs {
+        Ok(mut addrs) => addrs.next().unwrap().ip(),
+        Err(_) => {
+            eprintln!("Failed to resolve hostname");
+            std::process::exit(1);
         }
-    } else {
-        eprintln!("Hostname resolve failed");
-        std::process::exit(1);
     }
-
-    String::default()
 }
 
 fn set_terminal_title(title: &str) {
@@ -58,13 +49,13 @@ fn main() {
     set_terminal_title(&format!("Pinging {}:{}", target, port));
     println!(
         "\nConnecting to {} on port {}:\r\n",
-        &target.bright_yellow(),
+        &target.to_string().bright_yellow(),
         port.to_string().bright_yellow()
     );
 
     loop {
         let start_time = Instant::now();
-        if is_port_open(&target, port, timeout) {
+        if is_port_open(target, port, timeout) {
             let end_time = Instant::now();
             let duration = end_time.duration_since(start_time);
 
@@ -76,7 +67,7 @@ fn main() {
 
             println!(
                 "Connected to {}: time={} port={}",
-                &target.bright_green(),
+                &target.to_string().bright_green(),
                 format!("{:.2}ms", &latency_ms).bright_green(),
                 port.to_string().bright_green()
             );
