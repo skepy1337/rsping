@@ -12,17 +12,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "libc"
-version = "0.2.169"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a"
-
-[[package]]
 name = "rsping"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "colored",
- "libc",
  "winapi",
 ]
 
