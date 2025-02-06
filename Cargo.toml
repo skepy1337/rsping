@@ -1,0 +1,13 @@
+[package]
+name = "rsping"
+version = "0.1.0"
+edition = "2024"
+
+[profile.release]
+lto = true
+strip = true
+
+[dependencies]
+colored = "3.0.0"
+libc = "0.2.169"
+winapi = { version = "0.3.9", features = ["wincon", "winnt"] }
