@@ -55,25 +55,27 @@ fn main() {
 
     loop {
         let start_time = Instant::now();
-        if is_port_open(target, port, timeout) {
-            let end_time = Instant::now();
-            let duration = end_time.duration_since(start_time);
-
-            let latency_ms = ((duration.as_secs() as f64 * 1000.0
-                + duration.subsec_micros() as f64 / 1000.0)
-                * 100.0)
-                .round()
-                / 100.0;
-
-            println!(
-                "Connected to {}: time={} port={}",
-                &target.to_string().bright_green(),
-                format!("{:.2}ms", &latency_ms).bright_green(),
-                port.to_string().bright_green()
-            );
-        } else {
+        if !is_port_open(target, port, timeout) {
             println!("{}", format!("Connection timed out\r").bright_red());
+            continue;
         }
+
+        let end_time = Instant::now();
+        let duration = end_time.duration_since(start_time);
+
+        let latency_ms = ((duration.as_secs() as f64 * 1000.0
+            + duration.subsec_micros() as f64 / 1000.0)
+            * 100.0)
+            .round()
+            / 100.0;
+
+        println!(
+            "Connected to {}: time={} port={}",
+            &target.to_string().bright_green(),
+            format!("{:.2}ms", &latency_ms).bright_green(),
+            port.to_string().bright_green()
+        );
+
         std::thread::sleep(Duration::from_millis(1000));
     }
 }
