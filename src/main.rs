@@ -1,5 +1,6 @@
 use colored::Colorize;
 use std::net::{IpAddr, SocketAddr, TcpStream, ToSocketAddrs};
+use std::thread::sleep;
 use std::time::{Duration, Instant};
 
 fn is_port_open(ip: IpAddr, port: u16, timeout: u64) -> bool {
@@ -57,6 +58,7 @@ fn main() {
         let start_time = Instant::now();
         if !is_port_open(target, port, timeout) {
             println!("{}", format!("Connection timed out\r").bright_red());
+            sleep(Duration::from_millis(1000));
             continue;
         }
 
@@ -76,6 +78,6 @@ fn main() {
             port.to_string().bright_green()
         );
 
-        std::thread::sleep(Duration::from_millis(1000));
+        sleep(Duration::from_millis(1000));
     }
 }
